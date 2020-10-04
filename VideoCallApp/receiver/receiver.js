@@ -4,6 +4,12 @@ webSocket.onmessage = (event) => {
   handleSignallingData(JSON.parse(event.data));
 }
 
+let userName;
+const sendData = (data) => {
+  data.userName = userName;
+  webSocket.send(JSON.stringify(data));
+}
+
 const handleSignallingData = (data) => {
   switch (data.type) {
     case "offer":
@@ -27,14 +33,6 @@ const createAndSendAnswer = () => {
   });
 }
 
-const sendUserName = () => {
-  userName = document.getElementById("userName").value;
-  sendData({
-    type: "store_user"
-  });
-}
-
-let userName;
 let localStream;
 let peerConnection;
 const joinCall = () => {
