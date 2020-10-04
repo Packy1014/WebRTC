@@ -10,21 +10,21 @@ const handleSignallingData = (data) => {
       peerConnection.setRemoteDescription(data.answer);
       break;
     case "candidate":
-      peerConnection.setIceCandidate(data.candidate);
+      peerConnection.addIceCandidate(data.candidate);
   };
 }
 
 let userName;
-const sendData = (data) => {
-  data.userName = userName;
-  webSocket.send(JSON.stringify(data));
-}
-
 const sendUserName = () => {
   userName = document.getElementById("userName").value;
   sendData({
     type: "store_user"
   });
+}
+
+const sendData = (data) => {
+  data.userName = userName;
+  webSocket.send(JSON.stringify(data));
 }
 
 let localStream;
@@ -60,7 +60,7 @@ const startCall = () => {
       document.getElementById("remote-video").srcObject = e.stream;
     };
 
-    peerConnection.onicecandidate = ((e) => {
+    peerConnection.onicecandidate = (e) => {
       if (e.candidate == null) {
         return;
       }
@@ -69,15 +69,15 @@ const startCall = () => {
         type: "store_candidate",
         candidate: e.candidate
       });
-    });
+    };
 
-    createAndSendOffer(peerConnection);
+    createAndSendOffer();
   }, (error) => {
     console.log(error);
   });
 }
 
-const createAndSendOffer = (peerConnection) => {
+const createAndSendOffer = () => {
   peerConnection.createOffer((offer) => {
     sendData({
       type: "store_offer",
@@ -99,5 +99,5 @@ const muteAudio = () => {
 let isVideo = true;
 const muteVideo = () => {
   isVideo = !isVideo;
-  localStream.getVideoTracks()[0].enabled = isvideo;
+  localStream.getVideoTracks()[0].enabled = isVideo;
 }

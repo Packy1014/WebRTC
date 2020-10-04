@@ -1,13 +1,7 @@
-const webSocket = new WebSocket("ws://127.0.0.1:3000");
+const webSocket = new WebSocket("ws://192.168.179.51:3000");
 
 webSocket.onmessage = (event) => {
   handleSignallingData(JSON.parse(event.data));
-}
-
-let userName;
-const sendData = (data) => {
-  data.userName = userName;
-  webSocket.send(JSON.stringify(data));
 }
 
 const handleSignallingData = (data) => {
@@ -17,7 +11,7 @@ const handleSignallingData = (data) => {
       createAndSendAnswer();
       break;
     case "candidate":
-      peerConnection.setIceCandidate(data.candidate);
+      peerConnection.addIceCandidate(data.candidate);
   };
 }
 
@@ -31,6 +25,12 @@ const createAndSendAnswer = () => {
   }, (error) => {
     console.log(error);
   });
+}
+
+let userName;
+const sendData = (data) => {
+  data.userName = userName;
+  webSocket.send(JSON.stringify(data));
 }
 
 let localStream;
@@ -67,7 +67,7 @@ const joinCall = () => {
       document.getElementById("remote-video").srcObject = e.stream;
     };
 
-    peerConnection.onicecandidate = ((e) => {
+    peerConnection.onicecandidate = (e) => {
       if (e.candidate == null) {
         return;
       }
@@ -76,7 +76,7 @@ const joinCall = () => {
         type: "send_candidate",
         candidate: e.candidate
       });
-    });
+    };
 
     sendData({
       type: "join_call"
@@ -95,5 +95,5 @@ const muteAudio = () => {
 let isVideo = true;
 const muteVideo = () => {
   isVideo = !isVideo;
-  localStream.getVideoTracks()[0].enabled = isvideo;
+  localStream.getVideoTracks()[0].enabled = isVideo;
 }

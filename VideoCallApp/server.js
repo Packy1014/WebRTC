@@ -34,7 +34,7 @@ webSocket.on("request", (req) => {
         if (user == null) {
           return;
         }
-        user.offser = data.offser;
+        user.offer = data.offer;
         break;
       case "store_candidate":
         if (user == null) {
@@ -74,7 +74,7 @@ webSocket.on("request", (req) => {
         user.candidates.forEach((candidate) => {
           sendData({
             type: "candidate",
-            candidate: data.candidate
+            candidate: candidate
           }, connection);
         })
         break;
@@ -96,9 +96,8 @@ const sendData = (data, conn) => {
 }
 
 const findUser = (userName) => {
-  users.forEach((user) => {
-    if (user.userName == userName) {
-      return user
-    }
-  });
+  for (let i = 0; i < users.length; i++) {
+    if (users[i].userName == userName)
+      return users[i]
+  }
 }
